@@ -46,9 +46,7 @@ namespace Scheduling
 
                 if (result == true)
                 {
-
-
-
+                    Sorter.LoadPoFile(dialog.FileName);
                 }
             }
             catch (Exception ex)

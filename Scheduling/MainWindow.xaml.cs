@@ -26,6 +26,13 @@ namespace Scheduling
             InitializeComponent();
         }
 
+        private PoSorter Sorter = new PoSorter();
+
+        private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try

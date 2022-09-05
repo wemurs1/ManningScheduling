@@ -46,7 +46,13 @@ namespace Scheduling
 
                 if (result == true)
                 {
+                    unsortedListBox.Items.Clear();
+                    sortedListBox.Items.Clear();
                     Sorter.LoadPoFile(dialog.FileName);
+                    foreach (var task in Sorter.UnSortedTasks)
+                    {
+                        unsortedListBox.Items.Add(task);
+                    }
                 }
             }
             catch (Exception ex)

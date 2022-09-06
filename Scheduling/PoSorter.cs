@@ -22,20 +22,22 @@ namespace Scheduling
 
         public void TopoSort()
         {
-            // Prepare the tasks.
-
-            // Give each task an empty followers list.
-
-            // Prepare the task prereqs.
+            foreach (var task in UnSortedTasks)
+            {
+                task.Followers = new List<Task>();
+            }
 
             foreach (Task task in UnSortedTasks)
             {
                 // Add this task to the followers lists of its prereqs.
-
+                foreach (var prereq in task.PrereqTasks)
+                {
+                    prereq.Followers.Add(task);
+                }
 
 
                 // Set the task's prereq count.
-
+                task.PrereqCount = task.PrereqTasks.Count;
             }
 
 
@@ -43,28 +45,53 @@ namespace Scheduling
             // Sort.
 
             // Create the ready list.
-
+            List<Task> readyList = new List<Task>();
 
 
             // Move tasks with no prerequisites onto the ready list.
+            foreach (var task in UnSortedTasks)
+            {
+                if (task.PrereqCount == 0)
+                {
+                    readyList.Add(task);
+                }
+            }
 
 
             // Make the sorted task list.
 
 
             // Process tasks until we can process no more.
-            while (true)
+            while (readyList.Count != 0)
             {
                 // Move the first ready task to the sorted list.
-
-                // Update the task's followers.
+                var workingTask = Pop(readyList);
+                if (workingTask != null)
                 {
-                    // Decrement the follower’s prereqs count.
+                    SortedTasks.Add(workingTask);
 
-                    // If the follower now has no prereqs, add it to the ready list.
-
+                    // Update the task's followers.
+                    foreach (var task in workingTask.Followers)
+                    {
+                        // Decrement the follower’s prereqs count.
+                        task.PrereqCount--;
+                        // If the follower now has no prereqs, add it to the ready list.
+                        if (task.PrereqCount == 0) readyList.Add(task);
+                    }
                 }
             }
+        }
+
+        private Task? Pop(List<Task> list)
+        {
+            if (list.Count != 0)
+            {
+                var task = list[0];
+                list.RemoveAt(0);
+                return task;
+            }
+
+            return null;
         }
 
         public string VerifySort()

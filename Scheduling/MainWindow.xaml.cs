@@ -70,9 +70,13 @@ namespace Scheduling
 
         private void sortButton_Click(object sender, RoutedEventArgs e)
         {
+            Sorter.TopoSort();
+            foreach (var task in Sorter.SortedTasks)
+            {
+                sortedListBox.Items.Add(task);
+            }
 
-
-
+            MessageBox.Show(Sorter.VerifySort());
         }
     }
 }

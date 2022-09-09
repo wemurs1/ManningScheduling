@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Scheduling
 {
@@ -14,6 +15,7 @@ namespace Scheduling
         public List<Task> PrereqTasks { get; set; }
         public List<Task> Followers { get; set; }
         public int PrereqCount { get; set; }
+        public Rect CellBounds { get; set; }
 
         public Task(int index, string name, List<int> prereqNumbers)
         {
@@ -22,6 +24,7 @@ namespace Scheduling
             PrereqNumbers = prereqNumbers;
             PrereqTasks = new List<Task>();
             Followers = new List<Task>();
+            CellBounds = new Rect();
         }
 
         public override string ToString()

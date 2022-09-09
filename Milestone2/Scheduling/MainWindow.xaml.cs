@@ -62,6 +62,20 @@ namespace Scheduling
             }
         }
 
+        private void TestSort_Command(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Sorter.TopoSort();
+                MessageBox.Show(Sorter.VerifySort());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+        }
+
         private void ExitCommand_Executed(object sender, RoutedEventArgs e)
         {
             Close();

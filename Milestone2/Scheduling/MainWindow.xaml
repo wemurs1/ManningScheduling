@@ -14,6 +14,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="Open" />
+                <MenuItem Header="Test Sort" Click="TestSort_Command"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="ExitCommand_Executed" />
             </MenuItem>

@@ -235,12 +235,12 @@ namespace Scheduling
 
         public void DrawPertChart(Canvas mainCanvas)
         {
-            const int LEFT_INCREMENT = 10;
-            const int TOP_INCREMENT = 10;
-            const int TASK_WIDTH = 10;
-            const int TASK_HEIGHT = 10;
-            int left = 10;
-            int top = 10;
+            const int LEFT_INCREMENT = 20;
+            const int TOP_INCREMENT = 20;
+            const int TASK_WIDTH = 20;
+            const int TASK_HEIGHT = 20;
+            int left = LEFT_INCREMENT;
+            int top = TOP_INCREMENT;
             mainCanvas.Children.Clear();
 
             if (Columns == null) return;
@@ -254,9 +254,11 @@ namespace Scheduling
                     cellBounds.Y = top;
                     cellBounds.Width = TASK_WIDTH;
                     cellBounds.Height = TASK_HEIGHT;
+                    task.CellBounds = cellBounds;
                     top = top + TASK_HEIGHT + TOP_INCREMENT;
                 }
                 left = left + TASK_WIDTH + LEFT_INCREMENT;
+                top = TOP_INCREMENT;
             }
 
             foreach (var column in Columns)
@@ -278,15 +280,15 @@ namespace Scheduling
             {
                 foreach (var task in column)
                 {
-                    mainCanvas.DrawRectangle(task.CellBounds, Brushes.White, Brushes.Black, 1);
+                    mainCanvas.DrawRectangle(task.CellBounds, Brushes.White, Brushes.DarkBlue, 1);
                     mainCanvas.DrawString(
-                        task.Index.ToString(), 
-                        TASK_WIDTH, 
-                        TASK_HEIGHT, 
+                        task.Index.ToString(),
+                        TASK_WIDTH,
+                        TASK_HEIGHT,
                         new Point(task.CellBounds.X + (0.5 * TASK_WIDTH), task.CellBounds.Y + (0.5 * TASK_HEIGHT)),
                         0,
                         10,
-                        Brushes.Black);
+                        Brushes.DarkBlue);
                 }
             }
         }

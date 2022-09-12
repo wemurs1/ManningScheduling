@@ -1,0 +1,4 @@
+ 0, Start, []
+ 1, Grade site, [0]
+ 2, Dig moat, [0]
+ 3, Finish, [1, 2]

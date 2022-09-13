@@ -142,7 +142,7 @@ namespace Scheduling
                 }
             }
 
-            return new Task(int.Parse(taskComponents[0]), int.Parse(taskComponents[1]), taskComponents[2],preReqList);
+            return new Task(int.Parse(taskComponents[0]), int.Parse(taskComponents[1]), taskComponents[2], preReqList);
         }
 
         public void LoadPoFile(string filename)
@@ -215,7 +215,7 @@ namespace Scheduling
                     readyTasks.RemoveAt(0);
                     columnEntryList.Add(task);
                     sortedTasks.Add(task);
-                    
+
 
                     // Update the task's followers.
                     foreach (Task follower in task.Followers)
@@ -242,8 +242,8 @@ namespace Scheduling
         {
             const int LEFT_INCREMENT = 20;
             const int TOP_INCREMENT = 20;
-            const int TASK_WIDTH = 20;
-            const int TASK_HEIGHT = 20;
+            const int TASK_WIDTH = 40;
+            const int TASK_HEIGHT = 40;
             int left = LEFT_INCREMENT;
             int top = TOP_INCREMENT;
             mainCanvas.Children.Clear();
@@ -305,16 +305,27 @@ namespace Scheduling
                         text_fill = Brushes.Red;
                     }
                     mainCanvas.DrawRectangle(task.CellBounds, rectangle_fill, Brushes.DarkBlue, 1);
-                    mainCanvas.DrawString(
-                        task.Index.ToString(),
-                        TASK_WIDTH,
-                        TASK_HEIGHT,
-                        new Point(task.CellBounds.X + (0.5 * TASK_WIDTH), task.CellBounds.Y + (0.5 * TASK_HEIGHT)),
-                        0,
-                        10,
-                        text_fill);
+                    PlaceString(mainCanvas, task, 4, 1, text_fill, $"Task: {task.Index.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 2, text_fill, $"Dur: {task.Duration.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 3, text_fill, $"Start: {task.StartTime.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 4, text_fill, $"End: {task.EndTime.ToString()}");
                 }
             }
+        }
+
+        private Label PlaceString(Canvas canvas, Task task, int lines, int lineNo, Brush brush, string text)
+        {
+            if (lines <= 0 || lineNo <= 0 || lineNo > lines) throw new ArgumentException("Bad line parameters");
+            var stringHeight = task.CellBounds.Height / lines;
+            var top = task.CellBounds.Top + stringHeight * (lineNo - 1);
+            var stringBounds = new Rect(task.CellBounds.X, top, task.CellBounds.Width, stringHeight);
+            return canvas.RenderString(
+                stringBounds,
+                new Point(stringBounds.X + (0.5 * stringBounds.Width), stringBounds.Y + (0.5 * stringBounds.Height)),
+                text,
+                8,
+                brush);
+
         }
     }
 }

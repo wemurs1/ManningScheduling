@@ -108,6 +108,20 @@ namespace draw_pert_chart
             return label;
         }
 
+
+        public static Label RenderString(this Canvas canvas, Rect size, Point midPoint, string text, int fontSize, Brush brush)
+        {
+            return canvas.DrawString(
+                text,
+                size.Width,
+                size.Height,
+                midPoint,
+                0,
+                fontSize,
+                brush);
+        }
+
+
         #endregion Add Shapes to a Canvas
 
         #region Set Shape Properties

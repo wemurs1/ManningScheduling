@@ -53,7 +53,16 @@ namespace Scheduling
                     Sorter.BuildPertChart();
 
                     // Draw the PERT chart.
-                    Sorter.DrawPertChart(mainCanvas);
+                    //Sorter.DrawPertChart(mainCanvas);
+
+                    // Display the Gantt chart.
+                    Sorter.DrawGanttChart(mainCanvas);
+
+                    // Size the canvas.
+                    SizeCanvas();
+
+                    // Make the canvas visible.
+                    mainCanvas.Visibility = Visibility.Visible;
                 }
             }
             catch (Exception ex)
@@ -73,6 +82,38 @@ namespace Scheduling
             {
                 MessageBox.Show(ex.Message);
                 throw;
+            }
+        }
+
+
+        // Makethe canvas big enough to hold
+        // its contents (plus a margin).
+        private void SizeCanvas()
+        {
+            double xmax = 0;
+            double ymax = 0;
+            foreach (UIElement element in mainCanvas.Children)
+            {
+                if (element is Line)
+                {
+                    Line? line = element as Line;
+                    xmax = Math.Max(xmax, line!.X1);
+                    xmax = Math.Max(xmax, line.X2);
+                    ymax = Math.Max(ymax, line.Y1);
+                    ymax = Math.Max(ymax, line.Y2);
+                }
+                else if (element is Rectangle)
+                {
+                    Rectangle? rectangle = element as Rectangle;
+                    double x = Canvas.GetLeft(rectangle) + rectangle!.Width;
+                    xmax = Math.Max(xmax, x);
+                    double y = Canvas.GetTop(rectangle) + rectangle.Height;
+                    ymax = Math.Max(ymax, y);
+                }
+
+                const double MARGIN = 10;
+                mainCanvas.Width = xmax + MARGIN;
+                mainCanvas.Height = ymax + MARGIN;
             }
         }
 

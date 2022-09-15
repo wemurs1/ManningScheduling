@@ -14,14 +14,26 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="Open" />
-                <MenuItem Header="Test Sort" Click="TestSort_Command"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="ExitCommand_Executed" />
             </MenuItem>
         </Menu>
 
-        <Border BorderBrush="Black" BorderThickness="1" Background="White" Margin="5">
-            <Canvas Name="mainCanvas"/>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="5">
+            <ScrollViewer Name="scrPage"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto">
+                <Viewbox
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+                    <Canvas Name="mainCanvas" ClipToBounds="True"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                        Canvas.Left="0" Canvas.Top="0" Visibility="Hidden"
+                        Background="White">
+                    </Canvas>
+                </Viewbox>
+            </ScrollViewer>
         </Border>
+
     </DockPanel>
 </Window>

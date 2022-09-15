@@ -312,6 +312,80 @@ namespace Scheduling
                 }
             }
         }
+        public void DrawGanttChart(Canvas mainCanvas)
+        {
+            const int LEFT_INCREMENT = 20;
+            const int TOP_INCREMENT = 20;
+            const int TASK_WIDTH = 40;
+            const int TASK_HEIGHT = 40;
+            int left = LEFT_INCREMENT;
+            int top = TOP_INCREMENT;
+            mainCanvas.Children.Clear();
+
+            if (Columns == null) return;
+
+            foreach (var column in Columns)
+            {
+                foreach (var task in column)
+                {
+                    var cellBounds = task.CellBounds;
+                    cellBounds.X = left;
+                    cellBounds.Y = top;
+                    cellBounds.Width = TASK_WIDTH;
+                    cellBounds.Height = TASK_HEIGHT;
+                    task.CellBounds = cellBounds;
+                    top = top + TASK_HEIGHT + TOP_INCREMENT;
+                }
+                left = left + TASK_WIDTH + LEFT_INCREMENT;
+                top = TOP_INCREMENT;
+            }
+
+            foreach (var column in Columns)
+            {
+                foreach (var task in column)
+                {
+                    foreach (var prereq in task.PrereqTasks)
+                    {
+                        // See if this link is critical to its end task.
+                        double thickness = 1;
+                        Brush brush = Brushes.Black;
+                        if (prereq.EndTime == task.StartTime)
+                        {
+                            // This link is critical for task.
+                            thickness = 3;
+
+                            // See if this link is also critical to the Finish task.
+                            if (task.IsCritical) brush = Brushes.Red;
+                        }
+                        mainCanvas.DrawLine(
+                            new Point(prereq.CellBounds.X + TASK_WIDTH, prereq.CellBounds.Y + (0.5 * TASK_HEIGHT)),
+                            new Point(task.CellBounds.X, task.CellBounds.Y + (0.5 * TASK_HEIGHT)),
+                            brush,
+                            thickness);
+                    }
+                }
+            }
+
+            foreach (var column in Columns)
+            {
+                foreach (var task in column)
+                {
+                    // Figure out which colors to use.
+                    Brush rectangle_fill = Brushes.LightBlue;
+                    Brush text_fill = Brushes.Black;
+                    if (task.IsCritical)
+                    {
+                        rectangle_fill = Brushes.Pink;
+                        text_fill = Brushes.Red;
+                    }
+                    mainCanvas.DrawRectangle(task.CellBounds, rectangle_fill, Brushes.DarkBlue, 1);
+                    PlaceString(mainCanvas, task, 4, 1, text_fill, $"Task: {task.Index.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 2, text_fill, $"Dur: {task.Duration.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 3, text_fill, $"Start: {task.StartTime.ToString()}");
+                    PlaceString(mainCanvas, task, 4, 4, text_fill, $"End: {task.EndTime.ToString()}");
+                }
+            }
+        }
 
         private Label PlaceString(Canvas canvas, Task task, int lines, int lineNo, Brush brush, string text)
         {

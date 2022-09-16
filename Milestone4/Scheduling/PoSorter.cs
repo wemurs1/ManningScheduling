@@ -22,7 +22,7 @@ namespace Scheduling
         const int TOP_INCREMENT = 20;
         const int TASK_WIDTH = 40;
         const int TASK_HEIGHT = 40;
-        const int TEXT_WIDTH = 80;
+        const int TEXT_WIDTH = 100;
         const int NORMAL_LINE_THICKNESS = 1;
         const int CRITIAL_LINE_THICKNESS = 3;
 
@@ -36,6 +36,7 @@ namespace Scheduling
         Brush CriticalLineBrush = Brushes.Red;
         Brush GridTextBrush = Brushes.Black;
         Brush TaskTextBrush = Brushes.Black;
+        Brush TaskTextBackgroundBrush = Brushes.White;
 
 
         public PoSorter()
@@ -336,20 +337,51 @@ namespace Scheduling
         {
             int left = LEFT_INCREMENT;
             int top = TOP_INCREMENT;
+            var tempTaskList = new List<Task>();
             mainCanvas.Children.Clear();
 
             if (Columns == null) return;
-
-            // determine number of days and number of tasks
-            var days = Columns[Columns.Count - 1][0].EndTime;
-            var tasks = 0;
             foreach (var column in Columns)
             {
-                tasks += column.Count;
+                foreach (var task in column)
+                {
+                    tempTaskList.Add(task);
+                }
+            }
+            SortedTasks = tempTaskList.OrderBy(task => task.Index).ToList();
+
+            DrawGrid(mainCanvas, left, top);
+
+            var taskNo = 0;
+
+            foreach (var task in SortedTasks)
+            {
+                DrawTask(mainCanvas, task, ++taskNo);
             }
 
-            // Draw the grid
-            DrawGrid(mainCanvas, left, top, tasks, days);
+        }
+
+        private void DrawTask(Canvas canvas, Task task, int taskNo)
+        {
+            var text = $"{task.Index}. {task.Name}";
+            var textTop = TOP_INCREMENT + (taskNo * TASK_HEIGHT);
+            var taskLeft = LEFT_INCREMENT + (task.StartTime * TASK_WIDTH);
+            canvas.DrawLabel(
+                new Rect(LEFT_INCREMENT, textTop, TEXT_WIDTH, TASK_HEIGHT),
+                text,
+                TaskTextBackgroundBrush,
+                TaskTextBrush,
+                HorizontalAlignment.Left,
+                VerticalAlignment.Center,
+                10,
+                1
+            );
+            canvas.DrawRectangle(
+                new Rect(textTop, taskLeft, task.Duration * TASK_WIDTH, TASK_HEIGHT),
+                NormalTaskFillBrush,
+                NormalTaskOutlineBrush,
+                NORMAL_LINE_THICKNESS
+            );
         }
 
         private Label PlaceString(Canvas canvas, Task task, int lines, int lineNo, Brush brush, string text)
@@ -367,8 +399,19 @@ namespace Scheduling
 
         }
 
-        private void DrawGrid(Canvas canvas, int left, int top, int tasks, int days)
+        private void DrawGrid(Canvas canvas, int left, int top)
         {
+            if (Columns == null) return;
+
+            // determine number of days and number of tasks
+            var days = Columns[Columns.Count - 1][0].EndTime;
+            var tasks = 0;
+
+            foreach (var column in Columns)
+            {
+                tasks += column.Count;
+            }
+
             var currentY = top;
 
             for (int j = 0; j <= tasks; j++)
@@ -389,7 +432,7 @@ namespace Scheduling
                         TASK_HEIGHT,
                         new Point(currentX + (0.5 * TASK_WIDTH), currentY + (0.5 * TASK_HEIGHT)),
                         0,
-                        8,
+                        10,
                         TaskTextBrush
                     );
                     currentX = currentX + TASK_HEIGHT;

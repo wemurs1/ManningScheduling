@@ -349,23 +349,51 @@ namespace Scheduling
                 }
             }
             SortedTasks = tempTaskList.OrderBy(task => task.Index).ToList();
+            var taskNumber = 0;
+            foreach (var task in SortedTasks)
+            {
+                task.TaskNumber = ++taskNumber;
+            }
 
             DrawGrid(mainCanvas, left, top);
 
-            var taskNo = 0;
-
             foreach (var task in SortedTasks)
             {
-                DrawTask(mainCanvas, task, ++taskNo);
+                DrawTask(mainCanvas, task);
+            }
+
+            // seperate loop to ensure lines are on top of task rectangles
+            foreach (var task in SortedTasks)
+            {
+                DrawLines(mainCanvas, task);
             }
 
         }
 
-        private void DrawTask(Canvas canvas, Task task, int taskNo)
+        private void DrawLines(Canvas mainCanvas, Task task)
+        {
+            var taskTop = TOP_INCREMENT + (task.TaskNumber * TASK_HEIGHT) + TASK_HEIGHT * 0.25;
+            var taskLeft = LEFT_INCREMENT + TEXT_WIDTH + (task.StartTime * TASK_WIDTH);
+            foreach (var prereqTask in task.PrereqTasks)
+            {
+                var prereqTaskWidth = prereqTask.Duration == 0 ? NORMAL_LINE_THICKNESS : task.Duration * TASK_WIDTH;
+                mainCanvas.DrawLine(
+                    new Point(taskLeft, taskTop),
+                    new Point(taskLeft + TASK_WIDTH, taskTop),
+                    LineCriticalToFinish(task, task.PrereqTasks[0]),
+                    LineCriticalForTask(task, task.PrereqTasks[0])
+                );
+            }
+        }
+
+        private void DrawTask(Canvas canvas, Task task)
         {
             var text = $"{task.Index}. {task.Name}";
-            var textTop = TOP_INCREMENT + (taskNo * TASK_HEIGHT);
-            var taskLeft = LEFT_INCREMENT + (task.StartTime * TASK_WIDTH);
+            var textTop = TOP_INCREMENT + (task.TaskNumber * TASK_HEIGHT);
+            var taskLeft = LEFT_INCREMENT + TEXT_WIDTH + (task.StartTime * TASK_WIDTH);
+            var taskHeight = TASK_HEIGHT * 0.5;
+            var taskTop = textTop + 0.25 * TASK_HEIGHT;
+            var taskWidth = task.Duration == 0 ? NORMAL_LINE_THICKNESS : task.Duration * TASK_WIDTH;
             canvas.DrawLabel(
                 new Rect(LEFT_INCREMENT, textTop, TEXT_WIDTH, TASK_HEIGHT),
                 text,
@@ -377,11 +405,32 @@ namespace Scheduling
                 1
             );
             canvas.DrawRectangle(
-                new Rect(textTop, taskLeft, task.Duration * TASK_WIDTH, TASK_HEIGHT),
-                NormalTaskFillBrush,
-                NormalTaskOutlineBrush,
+                new Rect(taskLeft, taskTop, taskWidth, taskHeight),
+                TaskFillColour(task),
+                TaskOutlineColour(task),
                 NORMAL_LINE_THICKNESS
             );
+        }
+
+        private Brush TaskFillColour(Task task)
+        {
+            return task.IsCritical ? CriticalTaskFillBrush : NormalTaskFillBrush;
+        }
+
+        private Brush TaskOutlineColour(Task task)
+        {
+            return task.IsCritical ? CriticalTaskOutlineBrush : NormalTaskOutlineBrush;
+        }
+
+        private int LineCriticalForTask(Task task, Task prereqTask)
+        {
+            return task.StartTime == prereqTask.EndTime ? CRITIAL_LINE_THICKNESS : NORMAL_LINE_THICKNESS;
+        }
+
+        private Brush LineCriticalToFinish(Task task, Task prereqTask)
+        {
+            if (task.StartTime == prereqTask.EndTime && task.IsCritical) return CriticalLineBrush;
+            else return NormalLineBrush;
         }
 
         private Label PlaceString(Canvas canvas, Task task, int lines, int lineNo, Brush brush, string text)

@@ -20,6 +20,7 @@ namespace Scheduling
         public bool IsCritical { get; set; }
         public int StartTime { get; set; }
         public int EndTime { get; set; }
+        public int TaskNumber { get; set; }
 
         public Task(int index, int duration, string name, List<int> prereqNumbers)
         {

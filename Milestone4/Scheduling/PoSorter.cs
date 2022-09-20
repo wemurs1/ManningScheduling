@@ -376,10 +376,11 @@ namespace Scheduling
             var taskLeft = LEFT_INCREMENT + TEXT_WIDTH + (task.StartTime * TASK_WIDTH);
             foreach (var prereqTask in task.PrereqTasks)
             {
-                var prereqTaskWidth = prereqTask.Duration == 0 ? NORMAL_LINE_THICKNESS : task.Duration * TASK_WIDTH;
+                var prereqTaskRight = LEFT_INCREMENT + TEXT_WIDTH + (prereqTask.EndTime * TASK_WIDTH);
+                var prereqTaskMid = TOP_INCREMENT + (prereqTask.TaskNumber * TASK_HEIGHT) + 0.5 * TASK_HEIGHT;
                 mainCanvas.DrawLine(
-                    new Point(taskLeft, taskTop),
-                    new Point(taskLeft + TASK_WIDTH, taskTop),
+                    new Point(prereqTaskRight, prereqTaskMid),
+                    new Point(taskLeft, prereqTaskMid),
                     LineCriticalToFinish(task, task.PrereqTasks[0]),
                     LineCriticalForTask(task, task.PrereqTasks[0])
                 );

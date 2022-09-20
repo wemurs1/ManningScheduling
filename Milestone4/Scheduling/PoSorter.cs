@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -23,12 +20,12 @@ namespace Scheduling
         const int TASK_WIDTH = 40;
         const int TASK_HEIGHT = 40;
         const int TEXT_WIDTH = 100;
-        const int NORMAL_LINE_THICKNESS = 1;
-        const int CRITIAL_LINE_THICKNESS = 3;
+        const int NORMAL_LINE_THICKNESS = 2;
+        const int CRITIAL_LINE_THICKNESS = 4;
 
         Brush NormalTaskOutlineBrush = Brushes.Black;
         Brush NormalTaskFillBrush = Brushes.LightBlue;
-        Brush GridOutlineBrush = Brushes.Black;
+        Brush GridOutlineBrush = Brushes.LightGray;
         Brush GridFillBrush = Brushes.White;
         Brush NormalLineBrush = Brushes.Black;
         Brush CriticalTaskOutlineBrush = Brushes.Red;
@@ -373,17 +370,30 @@ namespace Scheduling
         private void DrawLines(Canvas mainCanvas, Task task)
         {
             var taskTop = TOP_INCREMENT + (task.TaskNumber * TASK_HEIGHT) + TASK_HEIGHT * 0.25;
+            var taskBottom = TOP_INCREMENT + (task.TaskNumber * TASK_HEIGHT) + TASK_HEIGHT * 0.75;
             var taskLeft = LEFT_INCREMENT + TEXT_WIDTH + (task.StartTime * TASK_WIDTH);
+            var taskOffset = 1;
             foreach (var prereqTask in task.PrereqTasks)
             {
                 var prereqTaskRight = LEFT_INCREMENT + TEXT_WIDTH + (prereqTask.EndTime * TASK_WIDTH);
                 var prereqTaskMid = TOP_INCREMENT + (prereqTask.TaskNumber * TASK_HEIGHT) + 0.5 * TASK_HEIGHT;
+                var taskIncrement = TASK_WIDTH * 0.2 * taskOffset;
+                var leftOffset = taskLeft + taskIncrement;
                 mainCanvas.DrawLine(
                     new Point(prereqTaskRight, prereqTaskMid),
-                    new Point(taskLeft, prereqTaskMid),
-                    LineCriticalToFinish(task, task.PrereqTasks[0]),
-                    LineCriticalForTask(task, task.PrereqTasks[0])
+                    new Point(leftOffset, prereqTaskMid),
+                    LineCriticalToFinish(task, prereqTask),
+                    LineCriticalForTask(task, prereqTask)
                 );
+                var taskJoin = taskTop;
+                if (taskTop < prereqTaskMid) taskJoin = taskBottom;
+                mainCanvas.DrawLine(
+                    new Point(leftOffset, prereqTaskMid),
+                    new Point(leftOffset, taskJoin),
+                    LineCriticalToFinish(task, prereqTask),
+                    LineCriticalForTask(task, prereqTask)
+                );
+                taskOffset++;
             }
         }
 
